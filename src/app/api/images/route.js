@@ -1,13 +1,9 @@
 import fs from 'fs';
 import path from "path";
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { NextResponse } from "next/server";
 import Image from '@/models/Image';
 import { connectionDB } from '@/utils/db';
-
-// Obtiene el directorio actual usando la URL del módulo
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { nanoid } from 'nanoid';
 
 // Funcion para subir imagenes
 export async function POST(req) {
@@ -18,12 +14,9 @@ export async function POST(req) {
         const data = await req.formData();
 
         const file = data.get('image'); // Obtiene el archivo 'image' del formulario
-        const name = `${data.get('name')}.${file.name.split(".")[1]}`;
+        const name = data.get('name');
         const description = data.get('description');
         // console.log(file, name, description);
-
-        // saber si una imagen ya creada con el mismo nombre
-        if (await Image.findOne({ name: name })) throw new Error("Ya existe una imagen con ese nombre");
 
         // verficar si exite el archivo
         if (!file) throw new Error('No se cargo ningun archivo');
@@ -34,14 +27,18 @@ export async function POST(req) {
             throw new Error('Solo se permiten archivos de imagen (jpeg, jpg, png, gif).');
         }
 
+        // crear un identificador para el archivo imagen
+        const fileID = `${nanoid(8)}.${file.name.split(".")[1]}`
+        // Construir la ruta donde se guardará el archivo
+        const uploadDir = path.join(process.cwd(), 'public/upload');
+        const dirFile = path.join(uploadDir, fileID);
+
+        // Verificar si el directorio de carga existe; si no, créalo
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
         // Lee el contenido del archivo y lo almacena en un formato manejable
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-
-        // Construye la ruta donde se guardará el archivo
-        const dirFile = path.join(__dirname, '../../../../public/upload', name);
-        // console.log(ruta);
-
         // Escribe el contenido del archivo en la ubicación especificada
         fs.writeFileSync(dirFile, buffer);
 
@@ -49,7 +46,7 @@ export async function POST(req) {
             name: name,
             originalName: file.name,
             description: description,
-            route: `/upload/${name}`,
+            route: `/upload/${fileID}`,
         })
         await image.save();
 

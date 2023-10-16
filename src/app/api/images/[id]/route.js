@@ -1,12 +1,8 @@
 import fs from 'fs';
 import path from "path";
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { NextResponse } from "next/server";
 import Image from '@/models/Image';
 import { connectionDB } from '@/utils/db';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export async function GET(req, { params }) {
     connectionDB();
@@ -33,8 +29,8 @@ export async function DELETE(req, { params }) {
 
         if (!image) return NextResponse.json({ message: "Image not found" }, { status: 404 });
 
-        const ruta = path.join(__dirname, '../../../../../public/upload', image.name);
-        fs.unlinkSync(ruta);
+        const dirFile = path.join(process.cwd(), "public", image.route);
+        fs.unlinkSync(dirFile);
 
         return NextResponse.json({
             msg: `!Imagen '${imageId}' eliminada!`
@@ -56,21 +52,8 @@ export async function PUT(req, { params }) {
         const image = await Image.findById(imageId);
         if (!image) return NextResponse.json({ message: "Image not found" }, { status: 404 });
 
-        // cambiar el nombre pero manteniendo su extencion original
-        const extName = image.name.split(".")[1];
-        const newName = `${name}.${extName}`;
-
-        // si el nombre a actualizar ya existe lanzar un error
-        if (await Image.findOne({ name: newName })) throw new Error("Ya existe una imagen con ese nombre");
-
-        const dirFile = path.join(__dirname, `../../../../../public/upload/${image.name}`);
-
-        // cambiar el nombre de la imagen en el servidor
-        fs.renameSync(dirFile, path.join(__dirname, `../../../../../public/upload/${newName}`));
-
-        image.name = newName;
+        image.name = name;
         image.description = description;
-        image.route = `/upload/${newName}`;
         await image.save();
 
         return NextResponse.json({
