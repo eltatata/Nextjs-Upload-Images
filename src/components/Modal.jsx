@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 import { Input, Textarea } from '@nextui-org/react';
 import { createImage, updateImage, getImage } from '@/services/api';
 
-export default function CustomModal({ isOpen, onClose, selectedImage }) {
+export default function CustomModal({ isOpen, onClose }) {
   const [data, setData] = useState({
     name: "",
     description: "",
@@ -14,12 +14,14 @@ export default function CustomModal({ isOpen, onClose, selectedImage }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false); // Estado para controlar el envío
   const router = useRouter();
+  const params = useParams();
+  // console.log(params)
 
   // si se selecciono una imagen, rellenar los campos con la informacion de la seleccionada
   useEffect(() => {
     const loadImage = async () => {
-      if (selectedImage) {
-        const image = await getImage(selectedImage);
+      if (params.id) {
+        const image = await getImage(params.id);
 
         setData({
           name: image.name.split(".")[0],
@@ -29,7 +31,7 @@ export default function CustomModal({ isOpen, onClose, selectedImage }) {
     }
 
     loadImage();
-  }, [selectedImage]);
+  }, []);
 
   const refresh = () => {
     // vaciar los inputs para evitar errores
@@ -61,13 +63,13 @@ export default function CustomModal({ isOpen, onClose, selectedImage }) {
     try {
       setIsSubmitting(true);
 
-      if (!selectedImage) {
+      if (!params.id) {
         const res = await createImage(data);
         if (!res) return;
         console.log(await res.json());
         refresh();
       } else {
-        const res = await updateImage(selectedImage, data);
+        const res = await updateImage(params.id, data);
         if (!res) return;
         console.log(await res.json());
         refresh();
@@ -97,7 +99,7 @@ export default function CustomModal({ isOpen, onClose, selectedImage }) {
             label="Choose your image"
             placeholder="Choose your image"
             onChange={handleChange}
-            className={!selectedImage ? "block" : "hidden"}
+            className={!params.id ? "block" : "hidden"}
           />
           <Input
             type="text"

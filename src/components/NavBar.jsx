@@ -1,7 +1,6 @@
 "use client";
 
-import React from 'react'
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, useDisclosure } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, useDisclosure, Link } from "@nextui-org/react";
 import CustomModal from './Modal';
 
 export default function NavBar() {
@@ -11,7 +10,9 @@ export default function NavBar() {
     <>
       <Navbar height={"128px"} shouldHideOnScroll>
         <NavbarBrand>
-          <h2 className='font-bold text-5xl' >Image Gallery</h2>
+          <Link color="foreground" className='font-bold text-5xl' href="/" >
+            Image Gallery
+          </Link>
         </NavbarBrand>
         <NavbarContent justify="end">
           <NavbarItem>
@@ -19,7 +20,7 @@ export default function NavBar() {
           </NavbarItem>
         </NavbarContent>
       </Navbar>
-      <CustomModal isOpen={isOpen} onClose={onOpenChange} selectedImage={false} />
+      <CustomModal isOpen={isOpen} onClose={onOpenChange} />
     </>
   )
 }
