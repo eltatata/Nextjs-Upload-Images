@@ -7,6 +7,9 @@ async function loadImages() {
   const images = await Image.find().lean();
   return images;
 };
+
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
 
   let images = await loadImages();
