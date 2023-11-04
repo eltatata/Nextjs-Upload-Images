@@ -12,9 +12,6 @@ const getImage = async (id) => {
 
 async function ImagePage({ params }) {
   const image = await getImage(params.id);
-  // image._id = image._id.toString();
-
-  // console.log(image._id.toString())
 
   return (
     <div className="flex items-center justify-center h-full">
@@ -22,7 +19,7 @@ async function ImagePage({ params }) {
         <NextImage
           priority
           as={NextImage}
-          width={300}
+          width={500}
           height={300}
           src={image.route}
           alt="NextUI hero Image"

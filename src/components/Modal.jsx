@@ -15,7 +15,6 @@ export default function CustomModal({ isOpen, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false); // Estado para controlar el envío
   const router = useRouter();
   const params = useParams();
-  // console.log(params)
 
   // si se selecciono una imagen, rellenar los campos con la informacion de la seleccionada
   useEffect(() => {
@@ -127,7 +126,7 @@ export default function CustomModal({ isOpen, onClose }) {
             onPress={handleSubmit}
             isDisabled={isSubmitting}
           >
-            {isSubmitting ? "Uploading..." : "Upload"} {/* Cambiar el texto mientras se envía */}
+            {isSubmitting ? "Sending..." : "Send"}
           </Button>
         </ModalFooter>
       </ModalContent>

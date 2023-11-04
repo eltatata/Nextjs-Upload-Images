@@ -69,8 +69,6 @@ export async function GET(params) {
     try {
         const images = await Image.find().lean();
 
-        console.log(images);
-
         return NextResponse.json({
             images
         });

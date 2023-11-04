@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { Button, useDisclosure } from "@nextui-org/react";
-import { useState } from "react";
 import { deleteImage } from '@/services/api';
 import CustomModal from './Modal';
 
