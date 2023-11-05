@@ -6,12 +6,13 @@ import Buttons from '@/components/Buttons';
 const getImage = async (id) => {
   connectionDB();
   const image = await Image.findById(id);
-  if (!image) return "Image not found";
   return image;
 }
 
 async function ImagePage({ params }) {
   const image = await getImage(params.id);
+
+  if (!image) return;
 
   return (
     <div className="flex items-center justify-center h-full">

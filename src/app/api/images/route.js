@@ -1,9 +1,13 @@
-import fs from 'fs';
-import path from "path";
+import { v2 as cloudinary } from 'cloudinary';
 import { NextResponse } from "next/server";
 import Image from '@/models/Image';
 import { connectionDB } from '@/utils/db';
-import { nanoid } from 'nanoid';
+
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+});
 
 // Funcion para subir imagenes
 export async function POST(req) {
@@ -27,30 +31,35 @@ export async function POST(req) {
             throw new Error('Solo se permiten archivos de imagen (jpeg, jpg, png, gif).');
         }
 
-        // crear un identificador para el archivo imagen
-        const fileID = `${nanoid(8)}.${file.name.split(".")[1]}`
-        // Construir la ruta donde se guardará el archivo
-        const uploadDir = path.join(process.cwd(), 'public/upload');
-        const dirFile = path.join(uploadDir, fileID);
-
-        // Verificar si el directorio de carga existe; si no, créalo
-        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
         // Lee el contenido del archivo y lo almacena en un formato manejable
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        // Escribe el contenido del archivo en la ubicación especificada
-        fs.writeFileSync(dirFile, buffer);
+
+        /* 
+            se paso de guardar la imagenes en el mismo servidor a cloudinary
+            ya que vercel no permite la escritura de archivos
+        */
+
+        // pasando el "buffer" a cloudinary
+        const res = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream({}, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+
+                resolve(res);
+            }).end(buffer);
+        })
 
         const image = new Image({
             name: name,
-            originalName: file.name,
+            public_id: res.public_id,
             description: description,
-            route: `/upload/${fileID}`,
+            route: res.secure_url,
         })
         await image.save();
 
-        console.log(image);
+        console.log("Imagen subida");
 
         // Responde con un mensaje JSON que indica que la imagen se está subiendo
         return NextResponse.json({
@@ -73,7 +82,7 @@ export async function GET(params) {
             images
         });
     } catch (error) {
-        return NextResponse.json({ err: error.message }, { status: 404 });
+        return NextResponse.json({ err: error.message }, { status: 500 });
 
     };
 };

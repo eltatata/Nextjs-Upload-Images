@@ -11,7 +11,6 @@ export default function Buttons({ id }) {
 
 	const handleDelete = async () => {
 		try {
-			console.log(id)
 			const res = await deleteImage(id);
 			if (!res) return;
 			if (res.status == 200) {

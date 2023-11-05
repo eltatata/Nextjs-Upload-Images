@@ -11,6 +11,7 @@
   "dependencies": {
     "@nextui-org/react": "^2.0.19",
     "autoprefixer": "10.4.15",
+    "cloudinary": "^1.41.0",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.16",
     "framer-motion": "^10.15.2",

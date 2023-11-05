@@ -6,6 +6,10 @@ const imageSchema = new Schema({
         required: true,
         trim: true,
     },
+    public_id: {
+        type: String,
+        required: true,
+    },
     description: {
         type: String,
         trim: true,
