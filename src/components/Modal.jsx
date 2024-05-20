@@ -61,20 +61,20 @@ export default function CustomModal({ isOpen, onClose }) {
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
+      let res;
 
       if (!params.id) {
-        const res = await createImage(data);
-        if (!res) return;
-        console.log(await res.json());
-        refresh();
+        res = await createImage(data);
       } else {
-        const res = await updateImage(params.id, data);
-        if (!res) return;
-        console.log(await res.json());
-        refresh();
+        res = await updateImage(params.id, data);
       }
+
+      if (!res.ok) throw new Error(`El servidor devolvió el código de estado ${res.status}`);
+
+      console.log(await res.json());
+      router.refresh()
     } catch (error) {
-      console.log(error);
+      console.log('Error:', error);
     } finally {
       setIsSubmitting(false);
     }
