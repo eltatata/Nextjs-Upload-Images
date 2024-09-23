@@ -11,10 +11,12 @@
   "dependencies": {
     "@nextui-org/react": "^2.0.19",
     "autoprefixer": "10.4.15",
+    "braces": "^3.0.3",
     "cloudinary": "^1.41.0",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.16",
     "framer-motion": "^10.15.2",
+    "micromatch": "^4.0.8",
     "mongoose": "^8.3.4",
     "nanoid": "^5.0.2",
     "next": "^14.2.13",
